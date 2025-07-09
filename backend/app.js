@@ -11,7 +11,10 @@ const db = require('./repositories/db');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users_routes');
 const authRouter = require('./routes/auth_routes');
-const workoutRouter = require('./routes/workout_routes');
+const workoutsRouter = require('./routes/workout_routes');
+const exercisesRouter = require('./routes/exercise_routes');
+const setsRouter = require('./routes/set_routes');
+const workoutXExerciseRouter = require('./routes/workout_x_exercise_routes');
 
 var app = express();
 
@@ -33,7 +36,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
-app.use('/workouts', workoutRouter);
+app.use('/workouts', workoutsRouter);
+app.use('/exercises', exercisesRouter);
+app.use('/sets', setsRouter);
+app.use('/workout_x_exercise', workoutXExerciseRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

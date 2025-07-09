@@ -49,9 +49,16 @@ router.get('/:id', async function(req, res) {
         const { id } = req.params;
         
         const workout = await req.app.locals.db.oneOrNone(
-            'SELECT * FROM acquafit.workout WHERE id = $1 AND fk_user = $2',
+            'SELECT * FROM acquafit.workout WHERE id = $1',
             [id, req.user.id]
         );
+
+        if (workout.fk_user !== req.user.id && !req.user.superadmin){
+            return res.status(403).json({ 
+                error: 'Only superadmins or the owner of the workout can access this resource',
+                message: 'Access denied: You are not authorized to access this resource'
+            });
+        }
         
         if (!workout) {
             return res.status(404).json({ error: 'Workout not found' });
@@ -73,14 +80,26 @@ router.patch('/:id', async function(req, res) {
         const { id } = req.params;
         const { name } = req.body;
         
-        const updatedWorkout = await req.app.locals.db.oneOrNone(
-            'UPDATE acquafit.workout SET name = COALESCE($1, name) WHERE id = $2 AND fk_user = $3 RETURNING *',
-            [name, id, req.user.id]
+        const workout = await req.app.locals.db.oneOrNone(
+            'SELECT * FROM acquafit.workout WHERE id = $1',
+            [id, req.user.id]
         );
-        
-        if (!updatedWorkout) {
+
+        if (!workout){
             return res.status(404).json({ error: 'Workout not found' });
         }
+
+        if (workout.fk_user !== req.user.id && !req.user.superadmin){
+            return res.status(403).json({ 
+                error: 'Only superadmins or the owner of the workout can access this resource',
+                message: 'Access denied: You are not authorized to access this resource'
+            });
+        }
+
+        const updatedWorkout = await req.app.locals.db.oneOrNone(
+            'UPDATE acquafit.workout SET name = COALESCE($1, name) WHERE id = $2 RETURNING *',
+            [name, id, req.user.id]
+        );
         
         res.json({
             message: 'Workout updated successfully',
@@ -96,15 +115,28 @@ router.patch('/:id', async function(req, res) {
 router.delete('/:id', async function(req, res) {
     try {
         const { id } = req.params;
-        
-        const deletedWorkout = await req.app.locals.db.oneOrNone(
-            'DELETE FROM acquafit.workout WHERE id = $1 AND fk_user = $2 RETURNING id',
+
+        const workout = await req.app.locals.db.oneOrNone(
+            'SELECT * FROM acquafit.workout WHERE id = $1',
             [id, req.user.id]
         );
-        
-        if (!deletedWorkout) {
+
+        if (!workout){
             return res.status(404).json({ error: 'Workout not found' });
         }
+
+        if (workout.fk_user !== req.user.id && !req.user.superadmin){
+            return res.status(403).json({ 
+                error: 'Only superadmins or the owner of the workout can access this resource',
+                message: 'Access denied: You are not authorized to access this resource'
+            });
+        }
+        
+        await req.app.locals.db.none(
+            'DELETE FROM acquafit.workout WHERE id = $1',
+            [id]
+        );
+        
         
         res.json({ message: 'Workout deleted successfully' });
     } catch (error) {

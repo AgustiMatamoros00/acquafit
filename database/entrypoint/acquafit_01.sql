@@ -59,7 +59,7 @@ CREATE TABLE acquafit.set(
     "weight" INTEGER NOT NULL,
     repetitions INTEGER NOT NULL,
     rir INTEGER DEFAULT NULL,
-    fk_exercise INTEGER DEFAULT NULL REFERENCES acquafit.exercise(id)
+    fk_workout_x_exercise INTEGER NOT NULL REFERENCES acquafit.workout_x_exercise(id) 
 );
 
 CREATE TABLE acquafit.note(
@@ -72,4 +72,4 @@ CREATE TABLE acquafit.note(
 
 CREATE INDEX idx_user_token_user ON acquafit.user_token(fk_user);
 CREATE INDEX idx_workout_user ON acquafit.workout(fk_user);
-CREATE INDEX idx_set_exercise ON acquafit.set(fk_exercise);
+CREATE INDEX idx_set_workout_exercise ON acquafit.set(fk_workout_x_exercise);

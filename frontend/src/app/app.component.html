@@ -1,0 +1,41 @@
+<div class="container">
+    <h1>¡Bienvenido a AcquaFit!</h1>
+    <p>Tu aplicación de tracking de entrenamientos</p>
+    <div class="login-form">
+      <input 
+        type="text" 
+        placeholder="Email" 
+        [(ngModel)]="email"
+        class="input-field"
+        [disabled]="isLoading"
+      />
+      <div class="password-field">
+        <input 
+          [type]="showPassword ? 'text' : 'password'" 
+          placeholder="Password" 
+          [(ngModel)]="password"
+          class="input-field"
+          [disabled]="isLoading"
+        />
+        <button (click)="changePasswordVisibility()" [disabled]="isLoading">Show Password</button>
+      </div>
+    </div>
+    <button (click)="login()" class="input-button" [disabled]="isLoading">
+      {{ isLoading ? 'Iniciando sesión...' : 'Log In' }}
+    </button>
+    
+    <div *ngIf="apiResponse" class="api-response">
+      {{ apiResponse }}
+    </div>
+  </div>
+
+<style>
+.api-response {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+  color: #495057;
+  font-size: 14px;
+}
+</style>

@@ -7,9 +7,69 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #1E1E1E;
-  color: #ffffff;
-} 
+  background-color: #f5f5f5;
+}
+
+/* Notification System Styles */
+.notification-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.notification {
+  background: white;
+  color: #333;
+  padding: 16px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 350px;
+  word-wrap: break-word;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  pointer-events: auto;
+  border-left: 4px solid transparent;
+}
+
+.notification.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.notification-success {
+  background: #d4edda;
+  color: #155724;
+  border-left-color: #28a745;
+}
+
+.notification-error {
+  background: #f8d7da;
+  color: #721c24;
+  border-left-color: #dc3545;
+}
+
+/* Responsive notifications */
+@media (max-width: 480px) {
+  .notification-container {
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+  }
+  
+  .notification {
+    max-width: none;
+    font-size: 13px;
+    padding: 14px 16px;
+  }
+}
 
 input, button {
   color: #3A3A3A;

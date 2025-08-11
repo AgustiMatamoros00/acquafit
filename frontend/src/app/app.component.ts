@@ -1,57 +1,40 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ApiService } from './services/api.service';
+import { RouterOutlet, Router } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  email: string = '';
-  password: string = '';
-  showPassword: boolean = false;
-  apiResponse: string = '';
-  isLoading: boolean = false;
+export class AppComponent implements OnInit {
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ) {}
 
-  constructor(private apiService: ApiService) {}
-
-  changePasswordVisibility() {
-    this.showPassword = !this.showPassword;
+  async ngOnInit() {
+    // Verificar estado de autenticación al inicializar
+    await this.checkInitialAuth();
   }
 
-  login() {
-    if (!this.email || !this.password) {
-      this.apiResponse = 'Por favor, completa todos los campos';
-      return;
-    }
-
-    this.isLoading = true;
-    this.apiResponse = '';
-
-    // Usar el ApiService para hacer la petición al backend
-    this.apiService.post('/auth/login', {
-      email: this.email,
-      password: this.password
-    }).subscribe({
-      next: (response: any) => {
-        this.isLoading = false;
-        this.apiResponse = `Login exitoso: ${response.message || 'Bienvenido!'}`;
-        console.log('Login response:', response);
-        
-        // Manejar el token JWT si lo devuelve el backend
-        if (response.token) {
-          localStorage.setItem('token', response.token);
-        }
-      },
-      error: (error: any) => {
-        this.isLoading = false;
-        this.apiResponse = `Error al iniciar sesión: ${error}`;
-        console.error('Error al iniciar sesión:', error);
+  private async checkInitialAuth() {
+    try {
+      const isAuth = await this.authService.checkAuthStatus();
+      
+      // Si está autenticado y está en la ruta raíz o login, redirigir al home
+      if (isAuth && (this.router.url === '/' || this.router.url === '/login')) {
+        this.router.navigate(['/home']);
       }
-    });
+    } catch (error) {
+      console.error('Error verificando autenticación inicial:', error);
+      // En caso de error, redirigir al login
+      if (this.router.url !== '/login') {
+        this.router.navigate(['/login']);
+      }
+    }
   }
 } 

@@ -11,9 +11,22 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    
+    return headers;
+  }
+
   // GET request
   get<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(`${this.apiUrl}${endpoint}`)
+    return this.http.get<T>(`${this.apiUrl}${endpoint}`, { headers: this.getAuthHeaders() })
       .pipe(
         retry(1),
         catchError(this.handleError)
@@ -22,11 +35,7 @@ export class ApiService {
 
   // POST request
   post<T>(endpoint: string, data: any): Observable<T> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-
-    return this.http.post<T>(`${this.apiUrl}${endpoint}`, data, { headers })
+    return this.http.post<T>(`${this.apiUrl}${endpoint}`, data, { headers: this.getAuthHeaders() })
       .pipe(
         retry(1),
         catchError(this.handleError)
@@ -35,11 +44,7 @@ export class ApiService {
 
   // PUT request
   put<T>(endpoint: string, data: any): Observable<T> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-
-    return this.http.put<T>(`${this.apiUrl}${endpoint}`, data, { headers })
+    return this.http.put<T>(`${this.apiUrl}${endpoint}`, data, { headers: this.getAuthHeaders() })
       .pipe(
         retry(1),
         catchError(this.handleError)
@@ -48,7 +53,7 @@ export class ApiService {
 
   // DELETE request
   delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(`${this.apiUrl}${endpoint}`)
+    return this.http.delete<T>(`${this.apiUrl}${endpoint}`, { headers: this.getAuthHeaders() })
       .pipe(
         retry(1),
         catchError(this.handleError)

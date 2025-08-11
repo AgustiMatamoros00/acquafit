@@ -2,6 +2,7 @@ var express = require('express');
 var bcrypt = require('bcrypt');
 var router = express.Router();
 const jwt = require('jsonwebtoken');
+const { authenticateToken } = require('../middleware/auth');
 
 // Clave secreta para firmar JWT (en producción debería estar en variables de entorno)
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
@@ -9,6 +10,26 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-i
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
+});
+
+// Ruta para validar token
+router.get('/validate', authenticateToken, function(req, res) {
+    try {
+        res.json({ 
+            valid: true, 
+            user: {
+                id: req.user.id,
+                email: req.user.email,
+                name: req.user.name,
+                surname: req.user.surname,
+                weight_unit: req.user.weight_unit,
+                superadmin: req.user.superadmin
+            }
+        });
+    } catch (error) {
+        console.error('Token validation error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 // Ruta de login
@@ -55,7 +76,9 @@ router.post('/login', async function(req, res) {
                 id: user.id,
                 email: user.email,
                 name: user.name,
-                surname: user.surname
+                surname: user.surname,
+                weight_unit: user.weight_unit,
+                superadmin: user.superadmin
             }
         });
     } catch (error) {

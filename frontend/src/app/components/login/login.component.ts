@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+import { StorageService } from '../../services/storage.service';
 import { LoginResponse, ApiErrorResponse } from '../../models/api.models';
 
 @Component({
@@ -36,7 +37,8 @@ export class LoginComponent {
 
   constructor(
     private apiService: ApiService,
-    private authService: AuthService
+    private authService: AuthService,
+    private storageService: StorageService
   ) {}
 
   changePasswordVisibility() {

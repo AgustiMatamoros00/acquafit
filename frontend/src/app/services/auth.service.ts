@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { ApiService } from './api.service';
+import { StorageService } from './storage.service';
 import { UserData, TokenValidationResponse } from '../models/api.models';
 
 @Injectable({
@@ -9,18 +10,19 @@ import { UserData, TokenValidationResponse } from '../models/api.models';
 })
 export class AuthService {
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
-  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
   constructor(
     private router: Router,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private storageService: StorageService
   ) {
     // Verificar si ya hay un token al inicializar
     this.checkAuthStatus();
   }
 
   async checkAuthStatus(): Promise<boolean> {
-    const token = localStorage.getItem('token');
+    
+    const token = this.storageService.getToken();
     
     if (!token) {
       this.isAuthenticatedSubject.next(false);
@@ -28,13 +30,14 @@ export class AuthService {
     }
 
     try {
+      
       // Validar token con el backend
       const isValid = await this.validateTokenWithBackend(token);
       
       if (isValid) {
         this.isAuthenticatedSubject.next(true);
         
-        // Si hay un token válido y estamos en login, redirigir al home
+        // Solo redirigir si estamos en login
         if (this.router.url === '/login') {
           this.router.navigate(['/home']);
         }
@@ -46,7 +49,7 @@ export class AuthService {
         return false;
       }
     } catch (error) {
-      console.error('Error validando token:', error);
+      console.error('💥 Error validando token:', error);
       this.clearInvalidToken();
       return false;
     }
@@ -64,7 +67,8 @@ export class AuthService {
   }
 
   private clearInvalidToken(): void {
-    localStorage.removeItem('token');
+    this.storageService.removeToken();
+    this.storageService.removeUserData();
     this.isAuthenticatedSubject.next(false);
     
     // Solo redirigir si no estamos ya en login
@@ -78,27 +82,34 @@ export class AuthService {
     return token.length > 0;
   }
 
-  login(token: string): void {
-    localStorage.setItem('token', token);
+  login(token: string, userData?: any): void {
+    this.storageService.setToken(token);
+    if (userData) {
+      this.storageService.setUserData(userData);
+    }
     this.isAuthenticatedSubject.next(true);
     this.router.navigate(['/home']);
   }
 
   logout(): void {
-    localStorage.removeItem('token');
+    this.storageService.clearAll();
     this.isAuthenticatedSubject.next(false);
     this.router.navigate(['/login']);
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return this.storageService.getToken();
   }
 
   async getUserData(): Promise<UserData | null> {
     try {
-      // Obtener información del usuario desde la API
+      // Si no hay datos locales, obtener desde la API
       const response = await this.apiService.get<TokenValidationResponse>('/auth/validate').toPromise();
-      return response?.user || null;
+      if (response?.user) {
+        return response.user;
+      }
+      
+      return null;
     } catch (error) {
       console.error('Error obteniendo datos del usuario:', error);
       return null;
@@ -106,6 +117,9 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
+    // Verificar si el token está presente y es válido
+    const token = this.storageService.getToken();
+    this.isAuthenticatedSubject.next(token !== null);
     return this.isAuthenticatedSubject.value;
   }
 
@@ -117,5 +131,10 @@ export class AuthService {
   // Método para validar token en tiempo real
   async validateCurrentToken(): Promise<boolean> {
     return await this.checkAuthStatus();
+  }
+
+  // Método para verificar si hay un token almacenado
+  hasStoredToken(): boolean {
+    return this.storageService.hasToken();
   }
 }

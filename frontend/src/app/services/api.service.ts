@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,10 +10,10 @@ import { catchError, retry } from 'rxjs/operators';
 export class ApiService {
   private apiUrl = ''; // No prefix needed since we're using proxy
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private storageService: StorageService) { }
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
+    const token = this.storageService.getToken();
     let headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });

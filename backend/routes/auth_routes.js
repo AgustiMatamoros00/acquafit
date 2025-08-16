@@ -15,10 +15,20 @@ router.get('/', function(req, res, next) {
 // Ruta para validar token
 router.get('/validate', authenticateToken, function(req, res) {
     try {
+        // El middleware authenticateToken ya verifica la expiración del token
+        // Si llegamos aquí, el token es válido y no ha expirado
+        
+        // Obtener información del token desde el header
+        const authHeader = req.headers.authorization;
+        const token = authHeader.substring(7);
+        
+        // Decodificar el token para obtener información adicional (sin verificar, solo para leer)
+        const decoded = jwt.decode(token);
+        
         res.json({ 
             valid: true, 
             user: {
-                id: req.user.id,
+                userId: req.user.id,
                 email: req.user.email,
                 name: req.user.name,
                 surname: req.user.surname,
@@ -122,8 +132,6 @@ router.post('/register', async function(req, res) {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
-
 
 // Endpoints que no pueden ser usados por el usuario
 router.patch('/:id', async function(req, res) {

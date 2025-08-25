@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { UserData } from '../../models/api.models';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +16,7 @@ export class HomeComponent implements OnInit {
   isLoading: boolean = true;
   error: string | null = null;
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService, private router: Router) {}
 
   async ngOnInit() {
     await this.loadUserData();
@@ -32,6 +33,11 @@ export class HomeComponent implements OnInit {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  goInfo()
+  {
+      this.router.navigate(['/user-info'])
   }
 
   logout() {

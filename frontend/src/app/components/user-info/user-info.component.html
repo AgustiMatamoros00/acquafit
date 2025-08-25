@@ -1,0 +1,13 @@
+<div class="center-div">
+    <h1>Información del usuario</h1>
+    <div class="user-info" *ngIf="userData && !isLoading">
+        <p><strong>Email:</strong> {{ userData.email || 'N/A' }}</p>
+        <p><strong>Nombre:</strong> {{ userData.name }} {{ userData.surname }}</p>
+        <p><strong>Unidad de peso:</strong> {{ userData.weight_unit || 'No especificada' }}</p>
+        <p><strong>Admin:</strong> {{ userData.superadmin ? 'Sí' : 'No' }}</p>
+    </div>
+
+    <button (click)="goBack()" class="btn btn-secondary">
+        Volver al inicio
+    </button>
+</div>

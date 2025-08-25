@@ -1,31 +1,48 @@
 <div class="home-content">
-  <h1>¡Bienvenido a AcquaFit!</h1>
-  <p>Tu aplicación de tracking de entrenamientos</p>
+    <h1>¡Bienvenido a AcquaFit!</h1>
+    <p>Tu aplicación de tracking de entrenamientos</p>
 
-  <!-- Estado de carga -->
-  <div class="loading-state" *ngIf="isLoading">
-    <div class="spinner"></div>
-    <p>Cargando información del usuario...</p>
-  </div>
+    <!-- Estado de carga -->
+    <div class="loading-state" *ngIf="isLoading">
+        <div class="spinner"></div>
+        <p>Cargando información del usuario...</p>
+    </div>
 
-  <!-- Estado de error -->
-  <div class="error-state" *ngIf="error && !isLoading">
-    <p class="error-message">{{ error }}</p>
-    <button class="btn btn-secondary" (click)="loadUserData()">
-      Reintentar
-    </button>
-  </div>
+    <!-- Estado de error -->
+    <div class="error-state" *ngIf="error && !isLoading">
+        <p class="error-message">{{ error }}</p>
+        <button class="btn btn-secondary" (click)="loadUserData()">
+            Reintentar
+        </button>
+    </div>
 
-  <!-- Información del usuario -->
-  <div class="user-info" *ngIf="userData && !isLoading">
-    <h3>Información del Usuario</h3>
-    <p><strong>Email:</strong> {{ userData.email || 'N/A' }}</p>
-    <p><strong>Nombre:</strong> {{ userData.name }} {{ userData.surname }}</p>
-    <p><strong>Unidad de peso:</strong> {{ userData.weight_unit || 'No especificada' }}</p>
-    <p><strong>Admin:</strong> {{ userData.superadmin ? 'Sí' : 'No' }}</p>
-  </div>
-
-  <button (click)="logout()" class="btn btn-secondary">
-    Cerrar Sesión
-  </button>
+    <div class="center-div">
+        <button class="card-1" *ngIf="userData && !isLoading" (click)="goInfo()">
+            Información del Usuario
+        </button>
+        <button class="card-1">
+            Ver mis rutinas
+        </button>
+        <button class="card-1">
+            Ver mis ejercicios favoritos
+        </button>
+        <button class="card-1">
+            Ver mis estadísticas
+        </button>
+        <button class="card-1">
+            Registrar nuevo entrenamiento
+        </button>
+        <button class="card-1">
+            Historial de entrenamientos
+        </button>
+        <button class="card-1">
+            Crear nueva rutina
+        </button>
+        <button class="card-1">
+            Progreso mensual
+        </button>
+        <button class="card-1">
+            Objetivos y metas
+        </button>
+    </div>
 </div> 

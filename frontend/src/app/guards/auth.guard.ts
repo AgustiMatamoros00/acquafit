@@ -22,7 +22,7 @@ export const homeGuard: (route: any, state: any) => (boolean) = (route, state) =
   // Eliminado console.log
   if (!authService.isLoggedIn()) {
     router.navigate(['/login']);
-    authService.logout();
+    authService.logout();   
     return false;
   }
 

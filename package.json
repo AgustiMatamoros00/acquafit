@@ -1,0 +1,29 @@
+{
+  "name": "acquafit-windows",
+  "version": "1.0.0",
+  "description": "AcquaFit - Workout tracking application for Windows with SQL Server",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "setup:db": "pwsh -ExecutionPolicy Bypass -File scripts/setup-database.ps1",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "create:user": "pwsh -ExecutionPolicy Bypass -File scripts/create-first-user.ps1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/acquafit-windows"
+  },
+  "keywords": [
+    "fitness",
+    "workout",
+    "tracking",
+    "sql-server",
+    "nodejs",
+    "angular",
+    "express"
+  ],
+  "author": "AcquaFit Team",
+  "license": "MIT"
+}
+

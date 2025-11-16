@@ -1,0 +1,9 @@
+<div class="container">
+  <!-- Botón de logout si está autenticado -->
+  <button *ngIf="authService.isLoggedIn()" (click)="authService.logout()" class="logout-btn">
+    Cerrar Sesión
+  </button>
+  
+  <!-- Router outlet para mostrar los componentes según la ruta -->
+  <router-outlet></router-outlet>
+</div>

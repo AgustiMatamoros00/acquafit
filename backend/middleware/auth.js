@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
-
-// Clave secreta para verificar JWT (debe ser la misma que en auth_routes)
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
+const config = require('../config');
+const userRepository = require('../repositories/user_repository');
 
 // Middleware de autenticación
 const authenticateToken = async function(req, res, next) {
@@ -15,13 +14,10 @@ const authenticateToken = async function(req, res, next) {
         const token = authHeader.substring(7); // Remover 'Bearer ' del token
 
         // Verificar y decodificar el JWT
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, config.jwt.secret);
         
         // Obtener datos actualizados del usuario desde la base de datos
-        const user = await req.app.locals.db.oneOrNone(
-            'SELECT id, email, name, surname, weight_unit, superadmin FROM acquafit."user" WHERE id = $1',
-            [decoded.userId]
-        );
+        const user = await userRepository.findById(decoded.userId);
 
         if (!user) {
             return res.status(401).json({ error: 'User not found' });
